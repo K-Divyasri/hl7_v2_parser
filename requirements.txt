@@ -1,0 +1,9 @@
+# Core dependencies. The parser itself is pure standard-library Python; Faker is
+# only used to generate synthetic sample messages.
+Faker>=24.0
+pytest>=8.0
+
+# Optional - the production libraries shown in knowledge/06 and notebook 07.
+# Install separately if you want to compare:
+#   pip install hl7apy
+#   pip install hl7

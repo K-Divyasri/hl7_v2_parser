@@ -1,0 +1,11 @@
+# Same habit as Projects 1 and 2: generated data and secrets stay out of git. The
+# tiny synthetic sample under data/sample/ is the one committed exception.
+out/
+data/output/
+
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/

@@ -1,0 +1,50 @@
+# CI: run the pytest suite automatically.
+#
+# IMPORTANT: in your real repo this file must live at  .github/workflows/tests.yml
+# It will NOT run from anywhere else. The copy here under hosting/ is just the template.
+#
+# What it does: every time you push (or open a pull request, or click Run workflow), it
+# spins up a fresh Ubuntu box, installs your parser's dependencies, and runs pytest so
+# you get a green check when the code works and a red X when it doesn't.
+
+name: Tests
+
+on:
+  # Runs whenever you push commits to any branch.
+  push:
+  # Runs on pull requests too, so a bad change is caught before it merges.
+  pull_request:
+  # Lets you trigger it by hand from the Actions tab (Run workflow button).
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Pull your code onto the runner.
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # 2. Install Python. Match the version your project uses.
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. Install dependencies. The parser is pure standard library, but the tests
+      #    and the sample generator need Faker and pytest, which live in
+      #    build_from_scratch/requirements.txt. working-directory stands the runner
+      #    inside that folder first, because that is where the file is.
+      - name: Install dependencies
+        working-directory: build_from_scratch
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Run the tests. Again from inside build_from_scratch, because that is where
+      #    the hl7lib package and the tests/ folder live. Run pytest from the repo
+      #    root and it would not find them.
+      - name: Run pytest
+        working-directory: build_from_scratch
+        run: pytest -v
