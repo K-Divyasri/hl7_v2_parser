@@ -1,7 +1,7 @@
 # HL7 v2 parser - a "paste a message, get structured JSON" web app.
 #
 # This is a thin Streamlit wrapper around the real parser you built in
-# build_from_scratch/hl7lib. Streamlit turns a plain Python script into a small web
+# hl7lib/ at the repo root. Streamlit turns a plain Python script into a small web
 # page: every st.something() call draws a widget. There is no HTML or JavaScript to
 # write. When someone changes an input or clicks a button, Streamlit re-runs this
 # whole file top to bottom and redraws the page - keep that in mind as you read.
@@ -11,10 +11,10 @@ import sys
 
 # --- Make the real parser importable -----------------------------------------
 # This file lives at hosting/streamlit_app/app.py. The parser package (hl7lib) lives
-# at build_from_scratch/hl7lib. So we climb two folders up from this file
-# (streamlit_app -> hosting -> project root) and step into build_from_scratch, then
-# add that to Python's import path. After this line, "import hl7lib" just works.
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "build_from_scratch"))
+# at hl7lib/ in the repo root. So we climb two folders up from this file
+# (streamlit_app -> hosting -> repo root), then add that to Python's import path.
+# After this line, "import hl7lib" just works.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 
 import streamlit as st
 

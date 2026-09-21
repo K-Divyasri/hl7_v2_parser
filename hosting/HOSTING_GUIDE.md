@@ -80,7 +80,7 @@ __pycache__/
 Why these matter:
 
 - `out/` and `output/` - any messages you generate locally stay on your laptop. The
-  repo ships a tiny committed sample under `build_from_scratch/data/sample/` on
+  repo ships a tiny committed sample under `data/sample/` on
   purpose (so the project runs out of the box), but bulk output you generate does not
   go in Git. Clean repo, right habit.
 - `.env` - if you ever add a secret, it goes here, and this line keeps it off the
@@ -92,19 +92,19 @@ pure standard-library Python; the app generates its samples in memory. So unlike
 Project 1, there is no `DB_URL` to manage - nothing to put in GitHub Secrets. One less
 thing to get wrong.
 
-### 1c. Decide what to push - push the whole project folder
+### 1c. Decide what to push - push the whole repo
 
-Push the **whole project folder** (`03_hl7_v2_parser/`) as one repo. That way
-`hosting/` and `build_from_scratch/` sit together exactly as the app expects: the
-Streamlit app reaches from `hosting/streamlit_app/app.py` up two levels and into
-`build_from_scratch/` to import your `hl7lib` package.
+Push the **whole repo** as one repo. That way
+`hosting/` and `hl7lib/` sit together exactly as the app expects: the
+Streamlit app reaches from `hosting/streamlit_app/app.py` up two levels to the repo
+root to import your `hl7lib` package.
 
-If you push only `build_from_scratch/` on its own, the Streamlit app will not find the
-code and the deploy will fail. So push from the project root.
+If you push `hosting/` without `hl7lib/`, the Streamlit app will not find the
+code and the deploy will fail. So push from the repo root.
 
 ### 1d. Initialize, stage, commit
 
-From the project root (`03_hl7_v2_parser/`):
+From the repo root:
 
 ```powershell
 git init
@@ -190,9 +190,9 @@ new repo immediately.
 
    That main file path is the one people get wrong. It is the path **inside your repo**
    to the app script. Type it exactly: `hosting/streamlit_app/app.py`. If you pushed
-   only the `build_from_scratch` folder instead of the whole project, this path will
+   only part of the repo instead of the whole thing, this path will
    not exist and the deploy will fail - that is the reason Step 1 said push from the
-   project root.
+   repo root.
 
 4. Click **Deploy**.
 
@@ -200,7 +200,7 @@ new repo immediately.
 
 Streamlit reads `hosting/streamlit_app/requirements.txt`, installs streamlit and Faker
 on its server, then runs your app. (It does not install `hl7lib` - that is your own
-code, imported straight from `build_from_scratch/`, and it is pure standard library
+code, imported straight from the repo root, and it is pure standard library
 with no dependencies.) The first build takes a couple of minutes - you will see a log
 scrolling. When it finishes you get a public URL like
 `https://your-app-name.streamlit.app`. Open it. Click **Load sample ADT**, then
@@ -215,9 +215,9 @@ internet.
 Click into the log; the real error is usually near the bottom.
 
 - `ModuleNotFoundError: No module named 'hl7lib'` - the repo does not contain
-  `build_from_scratch/`, or you deployed from the wrong folder. The app reaches from
-  `hosting/streamlit_app/app.py` up two levels and into `build_from_scratch/` to find
-  the package. Both folders must be in the same repo. Push from the project root and
+  `hl7lib/` at its root, or you deployed from the wrong folder. The app reaches from
+  `hosting/streamlit_app/app.py` up two levels to the repo root to find
+  the package. Both folders must be in the same repo. Push from the repo root and
   redeploy.
 - `ModuleNotFoundError: No module named 'faker'` - a package is missing from
   `hosting/streamlit_app/requirements.txt`. Add it, push, and Streamlit redeploys
@@ -232,7 +232,7 @@ anything after the first time.
 
 ## Step 3 - Turn on CI (run the tests automatically)
 
-Your `build_from_scratch/` folder has a pytest suite (around 23 tests). Right now those
+Your repo has a pytest suite (around 23 tests). Right now those
 only run when you type `pytest`. GitHub Actions runs them for you on every push, on
 GitHub's machines, for free, and shows a green check on your repo when they pass. That
 green check is what turns "I wrote some code" into "I wrote tested code."
@@ -263,13 +263,11 @@ on every push or pull request (and on demand from the Actions tab) it:
 
 1. Checks out your code onto a fresh Ubuntu box.
 2. Installs Python 3.12.
-3. Installs `build_from_scratch/requirements.txt` (Faker, pytest).
-4. Runs `pytest -v` inside `build_from_scratch/`.
+3. Installs `requirements.txt` (Faker, pytest).
+4. Runs `pytest -v` from the repo root.
 
-The `working-directory: build_from_scratch` line on the install and test steps is the
-important detail: it tells the runner to stand inside that folder, because that is
-where the `hl7lib` package and the `tests/` folder live. Run pytest from the repo root
-and it would not find them.
+There is no `working-directory:` line, and that is deliberate: the `hl7lib` package
+and the `tests/` folder both live at the repo root, which is where the runner starts.
 
 If every test passes, the run is green. If one fails, it goes red and GitHub emails you.
 

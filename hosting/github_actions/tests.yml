@@ -34,17 +34,13 @@ jobs:
 
       # 3. Install dependencies. The parser is pure standard library, but the tests
       #    and the sample generator need Faker and pytest, which live in
-      #    build_from_scratch/requirements.txt. working-directory stands the runner
-      #    inside that folder first, because that is where the file is.
+      #    requirements.txt at the repo root, which is where the runner starts.
       - name: Install dependencies
-        working-directory: build_from_scratch
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Run the tests. Again from inside build_from_scratch, because that is where
-      #    the hl7lib package and the tests/ folder live. Run pytest from the repo
-      #    root and it would not find them.
+      # 4. Run the tests from the repo root, because that is where the hl7lib
+      #    package and the tests/ folder live.
       - name: Run pytest
-        working-directory: build_from_scratch
         run: pytest -v

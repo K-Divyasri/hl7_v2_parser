@@ -5,7 +5,7 @@
 # a ModuleNotFoundError - so anything the app imports must be listed.
 #
 # Note what is NOT here: hl7lib. That is your own code, imported straight from
-# build_from_scratch/ (see the sys.path line at the top of app.py), and it is pure
+# the repo root (see the sys.path line at the top of app.py), and it is pure
 # standard-library Python - no dependencies of its own. Nothing to install.
 
 streamlit>=1.30
